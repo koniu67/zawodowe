@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #todo-container {
+            max-width: 400px;
+            margin: 20px auto;
+            font-family: sans-serif;
+        }
+
+        #task-list li {
+            display: flex;
+            justify-content: space-between;
+            margin: 4px 0;
+        }
+
+        #task-list button {
+            margin-left: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="todo-container">
+        <input id="task-input" type="text" placeholder="Wpisz zadanie">
+        <button id="add-btn">Dodaj zadanie</button>
+        <button id="clear-btn">Usuń wszystkie</button>
+
+        <ul id="task-list"></ul>
+    </div>
+    <script>
+        const input = document.getElementById('task-input');
+        const addBtn = document.getElementById('add-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const list = document.getElementById('task-list');
+
+        function addTask() {
+            const text = input.value.trim();
+            if (!text) return;
+
+            const li = document.createElement('li');
+            li.textContent = text;
+
+            const delBtn = document.createElement('button');
+            delBtn.textContent = 'Usuń';
+            delBtn.addEventListener('click', () => {
+                li.remove();                 // usuń pojedynczy element
+            });                            // [web:18]
+
+            li.appendChild(delBtn);
+
+            // nowy element na początek listy
+            list.prepend(li);              // [web:13][web:17]
+
+            input.value = '';
+            input.focus();
+        }
+
+        addBtn.addEventListener('click', addTask);
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') addTask();
+        });
+
+        clearBtn.addEventListener('click', () => {
+            list.innerHTML = '';           // usuwa wszystkie li naraz [web:21]
+        });
+
+    </script>
+</body>
+
+</html>

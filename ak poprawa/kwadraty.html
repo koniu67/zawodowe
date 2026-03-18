@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Zagnieżdżone Kwadraty</title>
+    <style>
+        #container {
+            width: 500px;
+            height: 500px;
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+        }
+
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            border: 1px solid gray;
+            box-sizing: border-box;
+            transition: background-color 0.2s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div style="margin-bottom: 20px;">
+        <label>Liczba kwadratów (N): </label>
+        <input type="number" id="numInput" value="10" min="1">
+        <button onclick="generateSquares()">Generuj</button>
+    </div>
+
+    <div id="container"></div>
+
+    <script>
+        const colors = ['red', 'limegreen', 'royalblue', 'orange', 'magenta'];
+
+        function generateSquares() {
+            const container = document.getElementById('container');
+            const n = parseInt(document.getElementById('numInput').value);
+
+            // Czyszczenie kontenera przed nową generacją
+            container.innerHTML = '';
+            container.style.backgroundColor = 'white';
+
+            let currentParent = container;
+            let currentSize = 500;
+
+            for (let i = 0; i < n; i++) {
+                const square = document.createElement('div');
+                square.classList.add('square');
+
+                // Losowy rozmiar: 50-75% rodzica
+                const scale = (Math.random() * (0.75 - 0.5) + 0.5);
+                currentSize = currentSize * scale;
+
+                square.style.width = `${currentSize}px`;
+                square.style.height = `${currentSize}px`;
+
+                // Obsługa interakcji
+                square.addEventListener('mouseover', (e) => {
+                    // e.stopPropagation() sprawia, że zdarzenie nie przechodzi do rodzica,
+                    // dzięki czemu tylko najgłębszy kwadrat pod myszką zmienia kolor.
+                    e.stopPropagation();
+
+                    // Reset wszystkich kwadratów przed pokolorowaniem nowego
+                    document.querySelectorAll('.square').forEach(s => s.style.backgroundColor = 'white');
+
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    square.style.backgroundColor = randomColor;
+                });
+
+                // Powrót do białego po opuszczeniu obszaru kwadratów
+                square.addEventListener('mouseleave', (e) => {
+                    square.style.backgroundColor = 'white';
+                });
+
+                currentParent.appendChild(square);
+                currentParent = square; // Następny kwadrat trafi do środka tego
+            }
+        }
+
+        // Początkowa generacja
+        generateSquares();
+    </script>
+</body>
+
+</html>

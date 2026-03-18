@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #power-ball {
+            width: 100px;
+            height: 100px;
+            background: orange;
+            /* dowolne tło */
+            border-radius: 50%;
+            /* okrągła kula */
+            display: flex;
+            /* wygodne centrowanie */
+            align-items: center;
+            /* wyśrodkowanie pionowe */
+            justify-content: center;
+            /* wyśrodkowanie poziome */
+            font-weight: bold;
+            user-select: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="power-ball">POWER</div>
+    <script>
+        const ball = document.getElementById('power-ball');
+
+        let size = 100;          // aktualny rozmiar
+        const minSize = 100;     // początkowy rozmiar
+        const maxSize = 250;     // maksymalny rozmiar
+        let growInterval = null;
+        let shrinkInterval = null;
+
+        function applySize() {
+            ball.style.width = size + 'px';
+            ball.style.height = size + 'px';
+        }
+
+        applySize();
+
+        ball.addEventListener('mousedown', () => {
+            clearInterval(shrinkInterval);
+            growInterval = setInterval(() => {
+                if (size < maxSize) {
+                    size += 2;
+                    applySize();
+                    if (size >= maxSize) {
+                        ball.textContent = 'POWER MAX!';
+                    }
+                }
+            }, 10);
+        });
+
+        document.addEventListener('mouseup', () => {
+            clearInterval(growInterval);
+            shrinkInterval = setInterval(() => {
+                if (size > minSize) {
+                    size -= 2;
+                    applySize();
+                    if (size <= minSize) {
+                        ball.textContent = 'POWER';
+                    }
+                } else {
+                    clearInterval(shrinkInterval);
+                }
+            }, 10);
+        });
+
+    </script>
+
+</body>
+
+</html>

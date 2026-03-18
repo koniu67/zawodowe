@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Invaders Fixed</title>
+    <style>
+        #kontener {
+            width: 500px;
+            height: 500px;
+            border: 1px solid black;
+            position: relative;
+            margin: 50px auto;
+        }
+
+        #statek {
+            height: 50px;
+            width: 50px;
+            background: purple;
+            position: absolute;
+            left: 200px;
+            bottom: 0px;
+        }
+
+        .pocisk {
+            height: 15px;
+            width: 10px;
+            background-color: purple;
+            position: absolute;
+        }
+
+        .opsi {
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            background: yellow;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="kontener" tabindex="0">
+        <div id="statek"></div>
+    </div>
+    <script>
+        const statek = document.getElementById('statek');
+        const kontener = document.getElementById('kontener');
+        let pozycja = 200; // For keys
+        let statekX = 200;
+        const krok = 10;
+        const maxPozycja = 450;
+
+        // Key control
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowLeft' && pozycja > 0) pozycja -= krok;
+            else if (e.key === 'ArrowRight' && pozycja < maxPozycja) pozycja += krok;
+            statekX = pozycja;
+            statek.style.left = statekX + 'px';
+            console.log(e.key);
+        });
+
+        // Mouse control (primary)
+        kontener.onmousemove = function (event) {
+            const rect = kontener.getBoundingClientRect();
+            const relativeX = event.clientX - rect.left;
+            statekX = Math.max(0, Math.min(450, relativeX - 25)); // Center ship
+            statek.style.left = statekX + 'px';
+            console.log(statekX);
+        };
+
+        function strzelanie() {
+            const pocisk = document.createElement('div');
+            pocisk.classList.add('pocisk');
+            pocisk.style.left = (statekX + 20) + 'px';
+            pocisk.style.bottom = '50px';
+            kontener.appendChild(pocisk);
+        }
+        setInterval(strzelanie, 500); // Faster fire
+
+        function animujPociski() {
+            const pociski = document.querySelectorAll('.pocisk');
+            pociski.forEach(pocisk => {
+                let bottom = parseInt(pocisk.style.bottom) || 50;
+                bottom += 5; // Faster
+                pocisk.style.bottom = bottom + 'px';
+                if (bottom > 485) pocisk.remove();
+
+                // Enemy collision
+                const enemies = document.querySelectorAll('.opsi');
+                enemies.forEach(enemy => {
+                    const pRect = pocisk.getBoundingClientRect();
+                    const eRect = enemy.getBoundingClientRect();
+                    if (pRect.left < eRect.right && pRect.right > eRect.left &&
+                        pRect.top < eRect.bottom && pRect.bottom > eRect.top) {
+                        pocisk.remove();
+                        enemy.remove();
+                    }
+                });
+            });
+            requestAnimationFrame(animujPociski); // Smooth loop
+        }
+        animujPociski();
+
+        // Create enemies
+        for (let i = 0; i < 10; i++) {
+            let e = document.createElement('div');
+            e.className = 'opsi';
+            e.style.left = (20 + i * 35) + 'px';
+            e.style.top = '20px';
+            kontener.appendChild(e);
+        }
+
+        kontener.focus(); // Enable keys
+    </script>
+</body>
+
+</html>

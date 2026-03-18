@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Odliczanie</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        #display {
+            font-size: 48px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <input type="number" id="timerInput" placeholder="Wpisz liczbę">
+    <button onclick="startCountdown()">Start</button>
+    <div id="display">0</div>
+
+    <script>
+        let intervalId = null;
+
+        function startCountdown() {
+            const input = document.getElementById('timerInput');
+            const display = document.getElementById('display');
+            let count = parseInt(input.value);
+
+            if (isNaN(count) || count < 0) return;
+
+            // Zawsze uruchamia nowe odliczanie, nadpisując poprzednie
+            if (intervalId) clearInterval(intervalId);
+
+            display.innerText = count;
+
+            intervalId = setInterval(() => {
+                count--;
+                display.innerText = count;
+
+                if (count <= 0) {
+                    clearInterval(intervalId);
+                    intervalId = null;
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>

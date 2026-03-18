@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #kontener {
+            width: 500px;
+            height: 500px;
+            border: 1px solid black;
+            position: relative;
+
+        }
+
+        #statek {
+            height: 50px;
+            width: 50px;
+            background: purple;
+            position: absolute;
+            left: 200px;
+            bottom: 0px;
+
+        }
+
+        .pocisk {
+            height: 15px;
+            width: 10px;
+            background-color: purple;
+        }
+
+        .opsi {
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            background: yellow;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="kontener" onmouseover="">
+        <div id="statek"></div>
+    </div>
+
+    <script>
+        const statek = document.getElementById('statek');
+        const kontener = document.getElementById('kontener');
+
+        let pozycja = 200;
+        const krok = 10;
+        const maxPozycja = 450;
+
+        let statekX = undefined
+        let statekY = statek.offsetHeight;
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowLeft' && pozycja > 0) {
+                pozycja -= krok;
+
+            } else if (e.key === 'ArrowRight' && pozycja < maxPozycja) {
+
+                pozycja += krok;
+
+            }
+            statek.style.left = pozycja + 'px';
+            console.log(e.key)
+        })
+
+        // kontener.onmousemove = function (event) {
+        //  const kontenerLeft = kontener.offsetLeft;
+        //   const kontenerWidth = kontener.offsetWidth;
+        //  const statekWidth = statek.offsetWidth;
+        //  const relativeX = event.clientX - kontenerLeft; paddleX = Math.max(0, Math.min(kontenerWidth - statekWidth, relativeX - 100));
+        //  statek.style.left = statekX + 'px';
+        //  console.log(statekX)
+        //  };
+
+        kontener.onmousemove = function (event) {
+            const rect = kontener.getBoundingClientRect();
+            const relativeX = event.clientX - rect.left;
+            statekX = Math.max(0, Math.min(450, relativeX - 25)); // Center ship
+            statek.style.left = statekX + 'px';
+            console.log(statekX);
+        };
+
+        function strzelanie() {
+            const pocisk = document.createElement('div');
+            pocisk.classList.add('pocisk');
+            pocisk.style.position = 'absolute';
+            pocisk.style.left = (pozycja + 17.5) + 'px';
+            pocisk.style.bottom = '50px';
+            kontener.appendChild(pocisk)
+        }
+        setInterval(strzelanie, 700);
+
+        function animujPociski() {
+            const pociski = document.querySelectorAll('.pocisk');
+            pociski.forEach((pocisk, index) => {
+                let bottom = parseInt(pocisk.style.bottom) || 50;
+                bottom += 1;
+                pocisk.style.bottom = bottom + 'px';
+                if (bottom > 485) {
+                    pocisk.remove();
+                }
+            });
+        }
+        setInterval(animujPociski);
+
+        for (let i = 0; i < 10; i++) {
+            let e = document.createElement("div");
+            e.className = "opsi";
+            e.style.left = (20 + i * 35) + "px";
+            e.style.top = "20px";
+            kontener.appendChild(e);
+        }
+
+
+    </script>
+</body>
+
+</html>

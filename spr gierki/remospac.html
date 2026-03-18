@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ultra Proste Space Invaders</title>
+
+    <style>
+        body {
+            background: #111;
+            color: white;
+            text-align: center;
+            font-family: Arial;
+        }
+
+        #game {
+            width: 400px;
+            height: 500px;
+            background: #222;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .enemy {
+            width: 30px;
+            height: 30px;
+            background: lightgreen;
+            position: absolute;
+        }
+
+        #player {
+            width: 60px;
+            height: 15px;
+            background: lightblue;
+            position: absolute;
+            bottom: 10px;
+            left: 170px;
+        }
+
+        #bullet {
+            width: 5px;
+            height: 10px;
+            background: yellow;
+            position: absolute;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Punkty: <span id="score">0</span></h2>
+
+    <div id="game">
+        <div id="player"></div>
+        <div id="bullet"></div>
+    </div>
+
+    <script>
+        let game = document.getElementById("game");
+        let player = document.getElementById("player");
+        let bullet = document.getElementById("bullet");
+
+        let playerX = 170;
+        let bulletY = 0;
+        let bulletActive = false;
+        let score = 0;
+
+        /* TWORZENIE WROGÓW */
+        for (let i = 0; i < 10; i++) {
+            let e = document.createElement("div");
+            e.className = "enemy";
+            e.style.left = (20 + i * 35) + "px";
+            e.style.top = "20px";
+            game.appendChild(e);
+        }
+
+        for (let i = 0; i < 10; i++) {
+            let e = document.createElement("div");
+            e.className = "enemy";
+            e.style.left = (20 + i * 35) + "px";
+            e.style.top = "55px";
+            game.appendChild(e);
+        }
+
+        for (let i = 0; i < 10; i++) {
+            let e = document.createElement("div");
+            e.className = "enemy";
+            e.style.left = (20 + i * 35) + "px";
+            e.style.top = "90px";
+            game.appendChild(e);
+        }
+
+        /* STEROWANIE */
+        document.addEventListener("keydown", function (e) {
+
+            if (e.key === "ArrowLeft") {
+                playerX -= 15;
+                if (playerX < 0) playerX = 0;
+                player.style.left = playerX + "px";
+            }
+
+            if (e.key === "ArrowRight") {
+                playerX += 15;
+                if (playerX > 340) playerX = 340;
+                player.style.left = playerX + "px";
+            }
+
+            if (e.key === " " && bulletActive === false) {
+                bulletActive = true;
+                bullet.style.display = "block";
+                bullet.style.left = (playerX + 27) + "px";
+                bulletY = 460;
+            }
+        });
+
+        /* STRZAŁ + KOLIZJA + RESPAWN */
+        setInterval(function () {
+
+            if (bulletActive) {
+                bulletY -= 10;
+                bullet.style.top = bulletY + "px";
+
+                let enemies = document.getElementsByClassName("enemy");
+
+                for (let i = 0; i < enemies.length; i++) {
+                    let ex = enemies[i].offsetLeft;
+                    let ey = enemies[i].offsetTop;
+
+                    let bx = bullet.offsetLeft;
+                    let by = bullet.offsetTop;
+
+                    if (
+                        bx > ex &&
+                        bx < ex + 30 &&
+                        by > ey &&
+                        by < ey + 30
+                    ) {
+                        enemies[i].remove();
+                        bullet.style.display = "none";
+                        bulletActive = false;
+
+                        score++;
+                        document.getElementById("score").innerText = score;
+
+                        break;
+                    }
+                }
+
+                /* JEŚLI NIE MA WROGÓW – TWORZYMY ZNOWU */
+                if (document.getElementsByClassName("enemy").length === 0) {
+
+                    for (let i = 0; i < 10; i++) {
+                        let e = document.createElement("div");
+                        e.className = "enemy";
+                        e.style.left = (20 + i * 35) + "px";
+                        e.style.top = "20px";
+                        game.appendChild(e);
+                    }
+
+                    for (let i = 0; i < 10; i++) {
+                        let e = document.createElement("div");
+                        e.className = "enemy";
+                        e.style.left = (20 + i * 35) + "px";
+                        e.style.top = "55px";
+                        game.appendChild(e);
+                    }
+
+                    for (let i = 0; i < 10; i++) {
+                        let e = document.createElement("div");
+                        e.className = "enemy";
+                        e.style.left = (20 + i * 35) + "px";
+                        e.style.top = "90px";
+                        game.appendChild(e);
+                    }
+                }
+
+                if (bulletY < 0) {
+                    bullet.style.display = "none";
+                    bulletActive = false;
+                }
+            }
+
+        }, 30);
+    </script>
+
+</body>
+
+</html>

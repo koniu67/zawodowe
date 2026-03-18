@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arkanoid</title>
+    <style>
+        .ball {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: red;
+            position: absolute;
+        }
+
+        .squares-container {
+            margin: auto;
+            position: absolute;
+            top: 60px;
+            left: 50px;
+            display: grid;
+            grid-template-columns: repeat(10, 40px);
+            grid-template-rows: repeat(5, 25px);
+
+
+            width: fit-content;
+            height: fit-content;
+
+        }
+
+        .cell {
+            width: 40px;
+            height: 25px;
+            background-color: green;
+            border: 1px solid black;
+        }
+
+        #container {
+            margin: auto;
+            width: 500px;
+            height: 700px;
+            border: 1px solid black;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .paddle {
+            width: 200px;
+            height: 20px;
+            background-color: aqua;
+            border-radius: 1em;
+            position: absolute;
+            bottom: 40px;
+            left: 150px;
+
+        }
+
+        #text {
+            margin: auto;
+            text-align: center;
+            font-size: large;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="text"></div>
+    <div id="container" onmouseover="">
+        <div class="squares-container"></div>
+        <div class="paddle"></div>
+        <div class="ball"></div>
+    </div>
+    <script>
+        const container = document.getElementById('container')
+        const textField = document.getElementById('text')
+
+        const squares = document.getElementsByClassName('squares-container')[0]
+        const paddle = document.getElementsByClassName('paddle')[0]
+        const ball = document.getElementsByClassName('ball')[0]
+
+
+        let paddleX = undefined
+        let paddleY = paddle.offsetHeight;
+
+        let ballX = undefined
+        let ballY = undefined
+        let ballMovement = undefined
+
+
+        let xDirection = undefined
+        let yDirection = undefined
+
+        let cells = []
+        //TODO: cells collision
+        function buildBoard() {
+            collisionCount = 0
+            cells = []
+            squares.innerHTML = ''
+            ballY = 60
+            ballX = 230
+            xDirection = 3
+            yDirection = 3
+
+
+            paddle.style.left = '150px'
+            ball.style.left = ballX + 'px'
+            ball.style.bottom = ballY + 'px'
+            for (let i = 0; i < 10 * 5; i++) {
+                const cell = document.createElement('div')
+                cell.classList.add('cell')
+                squares.appendChild(cell)
+                cells.push(cell)
+            } getCellCords()
+            ballMovement = setInterval(ballMove, 10)
+        }
+        container.onmousemove = function (event) {
+            const containerLeft = container.offsetLeft;
+            const containerWidth = container.offsetWidth;
+            const paddleWidth = paddle.offsetWidth;
+            const relativeX = event.clientX - containerLeft; paddleX = Math.max(0, Math.min(containerWidth - paddleWidth, relativeX - 100));
+            paddle.style.left = paddleX + 'px';
+            console.log(paddleX)
+        };
+
+        let cellCordsArray
+
+        function getCellCords() {
+            cellCordsArray = []
+            cells.forEach(cell => {
+                cellCordsArray.push({
+                    x: cell.offsetLeft + 50,
+                    y: cell.offsetTop + 60,
+                    isHit: false,
+                    element: cell
+                })
+            });
+            return cellCordsArray
+        }
+
+
+        let collisionCount = 0
+        function ballMove() {
+            textField.innerHTML = `Zbite kostki: ${collisionCount}`
+            if (collisionCount < 50) {
+                const ballTop = 700 - ballY - 30; for (let i = 0; i < cellCordsArray.length; i++) {
+                    const
+                        cell = cellCordsArray[i]; const ballRight = ballX + 30; if (!cell.isHit && (ballRight >= cell.x && ballX <= cell.x +
+                            40) && (ballTop >= cell.y && ballTop <= cell.y + 25)) {
+                        yDirection = -yDirection
+                        cell.isHit = true
+                        cell.element.style.visibility = 'hidden'
+                        collisionCount++
+                        break; // Only one collision per frame
+                    }
+                } if
+                    (ballX > 470 || ballX < 0) { xDirection = xDirection * -1 } if (ballY > 670) {
+                        yDirection = yDirection * -1
+                    }
+
+                if (yDirection < 0 && ballY <= paddleY + 37 && (ballX <= paddleX + 200 && ballX >= paddleX)) {
+                    yDirection = -yDirection
+                }
+                if (ballY < paddleY - 40) { endCondition('you lost') } ballX += xDirection
+                ballY += yDirection
+                ball.style.left = ballX + 'px'
+                ball.style.bottom = ballY + 'px'
+            } else {
+                endCondition('wygrałeś!!!!')
+            }
+        } buildBoard();
+
+        function endCondition(text) {
+            clearInterval(ballMovement)
+            setTimeout(() => {
+                alert(text)
+                buildBoard()
+            }, 2000)
+
+        }
+    </script>
+</body>
+
+</html>

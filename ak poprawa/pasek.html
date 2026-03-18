@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #progress-container {
+            width: 300px;
+            height: 20px;
+            border: 1px solid #000;
+            background: #eee;
+            margin-top: 10px;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: limegreen;
+            transition: width 0.05s linear;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="start-btn">Start</button>
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+    <p id="message"></p>
+
+    <script>
+        const startBtn = document.getElementById('start-btn');
+        const bar = document.getElementById('progress-bar');
+        const msg = document.getElementById('message');
+
+        let intervalId = null;
+        let width = 0; // 0–100
+
+        function resetBar() {
+            clearInterval(intervalId);
+            width = 0;
+            bar.style.width = '0%';
+            msg.textContent = '';
+        }
+
+        function startProgress() {
+            resetBar();
+
+            const totalTime = 5000;          // 5 sekund
+            const stepTime = 50;             // co 50 ms
+            const step = 100 / (totalTime / stepTime);
+
+            intervalId = setInterval(() => {
+                width += step;
+                if (width >= 100) {
+                    width = 100;
+                    bar.style.width = width + '%';
+                    clearInterval(intervalId);
+                    msg.textContent = 'Zakończono!';
+                } else {
+                    bar.style.width = width + '%';
+                }
+            }, stepTime);
+        }
+
+        startBtn.addEventListener('click', startProgress);
+
+    </script>
+</body>
+
+</html>

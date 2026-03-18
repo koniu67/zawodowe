@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kulka</title>
+    <style>
+        #box {
+            width: 200px;
+            height: 200px;
+            border: 1px solid black;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #ball {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: red;
+            position: absolute;
+            cursor: pointer;
+        }
+
+        #ball.stopped {
+            background: grey;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="box">
+        <div id="ball"></div>
+    </div>
+</body>
+<script>
+    const box = document.getElementById('box');
+    const ball = document.getElementById('ball');
+
+    const boxSize = 200;
+    const ballSize = 20;
+
+    let x = Math.random() * (boxSize - ballSize);
+    let y = Math.random() * (boxSize - ballSize);
+
+    // random diagonal direction: ±1, ±1  → 45°
+    let dx = Math.random() < 0.5 ? 2 : -2;
+    let dy = Math.random() < 0.5 ? 2 : -2;
+
+    let running = true;
+
+    function step() {
+        if (running) {
+            x += dx;
+            y += dy;
+
+            if (x <= 0 || x >= boxSize - ballSize) dx = -dx;
+            if (y <= 0 || y >= boxSize - ballSize) dy = -dy;
+
+            ball.style.left = x + 'px';
+            ball.style.top = y + 'px';
+        }
+        requestAnimationFrame(step);
+    }
+
+    step();  // start automatically
+
+    ball.addEventListener('click', () => {
+        running = !running;  // click toggles stop / start
+        if (!running) {
+            ball.classList.add('stopped');
+        } else {
+            ball.classList.remove('stopped')
+        }
+    });
+
+</script>
+
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Złap kropkę</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Obszar gry */
+        #game-board {
+            width: 500px;
+            height: 500px;
+            border: 2px solid #333;
+            position: relative;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+
+        /* Kropka */
+        #dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            position: absolute;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            /* Delikatne przejście koloru */
+        }
+
+        #score-display {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="score-display">Wynik: <span id="score">0</span></div>
+    <div id="game-board">
+        <div id="dot"></div>
+    </div>
+
+    <script>
+        const board = document.getElementById('game-board');
+        const dot = document.getElementById('dot');
+        const scoreEl = document.getElementById('score');
+
+        let score = 0;
+        let gameInterval;
+
+        // Funkcja losująca kolor RGB
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        // Funkcja zmieniająca pozycję i kolor kropki
+        function moveDot() {
+            // Losowanie pozycji (uwzględniając rozmiar kropki 30px)
+            const maxX = board.clientWidth - 30;
+            const maxY = board.clientHeight - 30;
+
+            const newX = Math.floor(Math.random() * maxX);
+            const newY = Math.floor(Math.random() * maxY);
+
+            dot.style.left = `${newX}px`;
+            dot.style.top = `${newY}px`;
+            dot.style.backgroundColor = getRandomColor();
+        }
+
+        // Resetowanie interwału (aby kropka nie uciekła od razu po kliknięciu)
+        function resetInterval() {
+            clearInterval(gameInterval);
+            gameInterval = setInterval(moveDot, 1000);
+        }
+
+        // Obsługa kliknięcia w kropkę
+        dot.addEventListener('click', () => {
+            score++;
+            scoreEl.textContent = score;
+
+            // Natychmiastowa zmiana
+            moveDot();
+            // Po kliknięciu kolejne kółko pojawi się po 1s (restart timera)
+            resetInterval();
+        });
+
+        // Start gry
+        moveDot();
+        resetInterval();
+
+    </script>
+</body>
+
+</html>

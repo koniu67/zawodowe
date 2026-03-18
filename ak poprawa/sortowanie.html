@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="numbers"></div>
+
+    <button id="asc">Sortuj rosnąco</button>
+    <button id="desc">Sortuj malejąco</button>
+    <button id="shuffle">Tasuj</button>
+    <script>
+        const numbersDiv = document.getElementById('numbers');
+        const ascBtn = document.getElementById('asc');
+        const descBtn = document.getElementById('desc');
+        const shuffleBtn = document.getElementById('shuffle');
+
+        let nums = [];
+
+        // losuje nowy zestaw liczb przy każdym przeładowaniu strony
+        function generateNumbers() {
+            nums = [];
+            for (let i = 0; i < 8; i++) {          // np. 8 liczb 0–9
+                nums.push(Math.floor(Math.random() * 10));
+            }
+            render();
+        }
+
+        function render() {
+            numbersDiv.innerHTML = '';
+            nums.forEach(n => {
+                const span = document.createElement('span');
+                span.textContent = n;
+                numbersDiv.appendChild(span);
+            });
+        }
+
+        // sortuj rosnąco
+        ascBtn.addEventListener('click', () => {
+            nums.sort((a, b) => a - b);
+            render();
+        });
+
+        // sortuj malejąco
+        descBtn.addEventListener('click', () => {
+            nums.sort((a, b) => b - a);
+            render();
+        });
+
+        // tasuj (losowa kolejność, algorytm Fisher–Yates)
+        shuffleBtn.addEventListener('click', () => {
+            for (let i = nums.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [nums[i], nums[j]] = [nums[j], nums[i]];
+            }
+            render();
+        });
+
+        generateNumbers();
+
+    </script>
+</body>
+
+</html>

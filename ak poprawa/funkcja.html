@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function sentenceStats(txt) {
+            // Dzielenie po znakach . ! ?
+            // Używamy wyrażenia regularnego, które zachowuje znaki interpunkcyjne
+            const sentences = txt.match(/[^.!?]+[.!?]/g) || [];
+
+            const total = sentences.length;
+            let specialEnd = 0;
+            let longSentences = 0;
+
+            sentences.forEach(s => {
+                const trimmed = s.trim();
+                // Sprawdzenie zakończenia na ! lub ?
+                if (trimmed.endsWith('!') || trimmed.endsWith('?')) {
+                    specialEnd++;
+                }
+                // Liczenie słów (więcej niż 5)
+                const words = trimmed.replace(/[.!?]/g, '').trim().split(/\s+/);
+                if (words.length > 5) {
+                    longSentences++;
+                }
+            });
+
+            return `Zdań: ${total}, zakończonych ! lub ?: ${specialEnd}, długich (więcej niż 5 słów): ${longSentences}`;
+        }
+
+        // Przykład użycia:
+        console.log(sentenceStats("Ala ma kota. Czy ty masz psa? To naprawdę świetne!"));
+        // Wynik: "Zdań: 3, zakończonych ! lub ?: 2, długich (więcej niż 5 słów): 0"
+    </script>
+</body>
+
+</html>

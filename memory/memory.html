@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory</title>
+    <style>
+        #startG {
+            height: 400px;
+            width: 400px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            gap: 5px;
+        }
+
+        .cell {
+            background-color: grey;
+            height: 100px;
+            width: 100px;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .matched {
+            opacity: 0.5;
+        }
+
+        #czas {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div id="tryby">
+            <img src="./img/czolowa.png" usemap="#image-map" style="width:400px;height:400px;">
+            <map name="image-map">
+                <area onclick="startG(30)" coords="44,41,69,150,331,63" shape="poly" alt="30sec">
+                <area onclick="startG(60)" coords="84,218,338,109,361,233" shape="poly" alt="60sec">
+                <area onclick="startG(90)" coords="95,271,115,379,368,299" shape="poly" alt="90sec">
+            </map>
+        </div>
+        <p id="czas"></p>
+        <div id="gameBoard"></div>
+    </div>
+
+    <script>
+        let blokada = false;
+        let pkarta = null;
+        let czasPozostaly = 0;
+        let czasLimit = 0;
+        let timerId = null;
+        let gameActive = false;
+        let matchedPairs = 0;
+        const czas = document.getElementById('czas')
+
+
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+            const milliseconds = Math.floor(ms % 1000).toString().padStart(3, '0');
+            return `${minutes}:${seconds}.${milliseconds}`;
+        }
+
+
+        function startCountdown() {
+            const startDate = new Date();
+            startDate.setTime(startDate.getTime() + czasPozostaly);
+
+            timerId = setInterval(() => {
+                const now = new Date();
+                const remaining = startDate.getTime() - now.getTime();
+
+
+
+                czasPozostaly = remaining;
+                czas.textContent = formatTime(remaining);
+                if (remaining <= 0) {
+                    czas.textContent = '00:00.000'
+                    clearInterval(timerId);
+                    gameActive = false;
+                    blokada = true;
+
+                    alert('koniec czasu');
+
+                    return;
+                }
+            }, 10);
+        }
+
+
+
+        function startG(sec) {
+            czasLimit = sec * 1000;
+            czasPozostaly = czasLimit;
+            czas.textContent = formatTime(czasPozostaly);
+            document.getElementById('tryby').classList.add("hidden");
+            createBoard();
+            gameActive = true;
+        }
+
+
+        function createBoard() {
+            let elementy = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8];
+            elementy = shuffle(elementy);
+
+            const gameBoardEl = document.getElementById('gameBoard');
+            gameBoardEl.innerHTML = '';
+
+            const board = document.createElement('div');
+            board.classList.add('board');
+
+            for (let i = 0; i < 16; i++) {
+                const cell = document.createElement('img');
+                cell.classList.add('cell');
+                cell.src = './img/0.jpg';
+                cell.dataset.index = elementy[i];
+                cell.dataset.revealed = 'false';
+                board.appendChild(cell);
+            }
+
+            gameBoardEl.appendChild(board);
+
+            board.querySelectorAll('.cell').forEach(cell => {
+                cell.addEventListener('click', function (e) {
+                    fklik(e);
+                });
+            });
+        }
+
+
+        function fklik(e) {
+            if (!gameActive || blokada || czasPozostaly <= 0) {
+                return;
+            }
+
+            const cell = e.currentTarget;
+
+            if (cell.dataset.revealed === 'true' || cell.classList.contains('matched') || cell === pkarta) {
+                return;
+            }
+
+            cell.src = `./img/${cell.dataset.index}.jpg`;
+            cell.dataset.revealed = 'true';
+
+
+            if (pkarta === null) {
+                pkarta = cell;
+
+                startCountdown();
+                return;
+            }
+
+            const dkarta = cell;
+            blokada = true;
+
+            if (pkarta.dataset.index === dkarta.dataset.index) {
+                pkarta.classList.add('matched');
+                dkarta.classList.add('matched');
+                matchedPairs += 2;
+
+                const clickHandler = function (e) {
+                    fklik(e);
+                };
+                pkarta.removeEventListener('click', clickHandler);
+                dkarta.removeEventListener('click', clickHandler);
+
+                pkarta = null;
+                blokada = false;
+
+
+
+                if (matchedPairs === 16) {
+                    clearInterval(timerId);
+                    alert('wygrana');
+                }
+            } else {
+                setTimeout(() => {
+                    pkarta.src = './img/0.jpg';
+                    dkarta.src = './img/0.jpg';
+                    pkarta.dataset.revealed = 'false';
+                    dkarta.dataset.revealed = 'false';
+                    pkarta = null;
+                    blokada = false;
+                }, 1000);
+            }
+        }
+
+
+        function shuffle(arr) {
+            let mieszanie = [];
+            for (let i = arr.length - 1; i >= 0; i--) {
+                const r = Math.random() * arr.length;
+                mieszanie.push(arr.splice(r, 1)[0]);
+            }
+            return mieszanie;
+        }
+    </script>
+</body>
+
+</html>

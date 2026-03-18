@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Snake</title>
+    <style>
+        body {
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            font-family: Arial;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(20, 20px);
+            grid-template-rows: repeat(20, 20px);
+            gap: 2px;
+        }
+
+        .cell {
+            width: 20px;
+            height: 20px;
+            border: 1px solid black;
+        }
+
+        .snake {
+            background: red;
+        }
+
+        .head {
+            background: crimson;
+        }
+
+        .food {
+            background: yellow;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="board"></div>
+
+    <script>
+        const board = document.getElementById("board");
+
+        const size = 20;
+        let snake;
+        let food;
+        let direction;
+        let nextDirection;
+        let game;
+
+        function init() {
+            snake = [{ x: 10, y: 10 }];
+            direction = "right";
+            nextDirection = "right";
+            spawnFood();
+        }
+
+        function spawnFood() {
+            food = {
+                x: Math.floor(Math.random() * size),
+                y: Math.floor(Math.random() * size)
+            };
+        }
+
+        function createBoard() {
+            board.innerHTML = "";
+            for (let i = 0; i < size * size; i++) {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                board.appendChild(cell);
+            }
+        }
+
+        function draw() {
+            const cells = document.querySelectorAll(".cell");
+            cells.forEach(c => c.className = "cell");
+
+            snake.forEach((part, i) => {
+                const index = part.y * size + part.x;
+                cells[index].classList.add("snake");
+                if (i === 0) cells[index].classList.add("head");
+            });
+
+            cells[food.y * size + food.x].classList.add("food");
+        }
+
+        function move() {
+            direction = nextDirection;
+
+            const head = { ...snake[0] };
+
+            if (direction === "right") head.x++;
+            if (direction === "left") head.x--;
+            if (direction === "up") head.y--;
+            if (direction === "down") head.y++;
+
+            // ściany
+            if (head.x < 0 || head.y < 0 || head.x >= size || head.y >= size) {
+                return gameOver();
+            }
+
+            // kolizja z sobą
+            if (snake.some(part => part.x === head.x && part.y === head.y)) {
+                return gameOver();
+            }
+
+            snake.unshift(head);
+
+            // jedzenie
+            if (head.x === food.x && head.y === food.y) {
+                spawnFood();
+            } else {
+                snake.pop();
+            }
+
+            draw();
+        }
+
+        function gameOver() {
+            clearInterval(game);
+            alert("Koniec gry!");
+            init();
+            game = setInterval(move, 100);
+        }
+
+        document.addEventListener("keydown", e => {
+            if (e.key === "ArrowUp" && direction !== "down") nextDirection = "up";
+            if (e.key === "ArrowDown" && direction !== "up") nextDirection = "down";
+            if (e.key === "ArrowLeft" && direction !== "right") nextDirection = "left";
+            if (e.key === "ArrowRight" && direction !== "left") nextDirection = "right";
+        });
+
+        createBoard();
+        init();
+        game = setInterval(move, 120);
+        draw();
+    </script>
+
+</body>
+
+</html>

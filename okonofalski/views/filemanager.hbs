@@ -1,0 +1,27 @@
+    <h1>filemanager</h1>
+    
+    <form>
+        <button type="button"> new file</button>
+        <button type="button"> select file to upload</button>
+        <button type="submit">upload</button>
+    </form>
+   
+    <form action="/addFolder" method="post">
+    <input type="text" name="name" placeholder="Nazwa folderu">
+    <button type="submit"> utworz folder </button>
+    </form>
+
+    <h2>lista folderow</h2>
+{{#if files}}
+    <ul>
+    {{#each files}}
+        {{#if isDirectory}}
+            <li>{{name}}/</li>
+        {{else}}
+            <li>{{name}}</li>
+        {{/if}}
+    {{/each}}
+    </ul>
+{{else}}
+    <p>Folder files/ jest pusty lub nie istnieje.</p>
+{{/if}}

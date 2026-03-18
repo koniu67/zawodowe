@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Snake</title>
+    <style>
+        #board {
+            display: grid;
+            grid-template-columns: repeat(20, 20px);
+            grid-template-rows: repeat(20, 20px);
+        }
+
+        .cell {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ccc;
+        }
+
+        .snake {
+            background: green;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="board"></div>
+
+    <script>
+        const size = 20;
+        const board = document.getElementById("board");
+
+        let snake = [
+            { x: 10, y: 10 },
+            { x: 9, y: 10 },
+            { x: 8, y: 10 }
+        ];
+
+        let direction = "right";
+
+        // tworzenie planszy
+        for (let i = 0; i < size * size; i++) {
+            const div = document.createElement("div");
+            div.classList.add("cell");
+            board.appendChild(div);
+        }
+
+        function draw() {
+            const cells = document.querySelectorAll(".cell");
+            cells.forEach(c => c.className = "cell");
+
+            snake.forEach(part => {
+                cells[part.y * size + part.x].classList.add("snake");
+            });
+        }
+
+        function move() {
+            const head = { ...snake[0] };
+
+            if (direction === "right") head.x++;
+            if (direction === "left") head.x--;
+            if (direction === "up") head.y--;
+            if (direction === "down") head.y++;
+
+            // kolizja ze ścianą
+            if (head.x < 0 || head.y < 0 || head.x >= size || head.y >= size) {
+                alert("Koniec gry");
+                clearInterval(game);
+                return;
+            }
+
+            // kolizja z samym sobą
+            if (snake.some(part => part.x === head.x && part.y === head.y)) {
+                alert("Koniec gry");
+                clearInterval(game);
+                return;
+            }
+
+            snake.unshift(head);
+            snake.pop(); // brak rośnięcia
+
+            draw();
+        }
+
+        document.addEventListener("keydown", e => {
+            if (e.key === "ArrowUp") direction = "up";
+            if (e.key === "ArrowDown") direction = "down";
+            if (e.key === "ArrowLeft") direction = "left";
+            if (e.key === "ArrowRight") direction = "right";
+        });
+
+        const game = setInterval(move, 150);
+        draw();
+    </script>
+
+</body>
+
+</html>
